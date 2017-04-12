@@ -1,0 +1,53 @@
+{
+  "name": "itbar",
+  "version": "1.0.3",
+  "description": "This is a toolbar for it admins",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "package": "electron-packager ./  --platform=win32 --out ./app --version 0.0.2 --overwrite --icon=./img/itbar.ico"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yadsun/ittaskbar.git"
+  },
+  "keywords": [
+    "itbar",
+    "electron"
+  ],
+  "author": "syd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yadsun/ittaskbar/issues"
+  },
+  "homepage": "https://github.com/yadsun/ittaskbar#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "electron-screencapture": "^1.1.0",
+    "electron-updater": "^1.11.2",
+    "jquery": "^3.2.1",
+    "macaddress": "^0.2.4",
+    "stompit": "^0.25.0",
+    "user-media-screenshot": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/jquery": "^2.0.41",
+    "electron": "^1.6.2",
+    "electron-builder": "^16.8.2"
+  },
+  "release": "build",
+  "build": {
+    "appId": "com.github.iffy.electronupdaterexample",
+    "nsis": {
+      "perMachine": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "yadsun",
+        "repo": "ittaskbar"
+      }
+    ]
+  }
+}

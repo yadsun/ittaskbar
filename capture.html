@@ -1,0 +1,26 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <script>
+        const { desktopCapturer, ipcRenderer } = require('electron')
+
+
+        function capture() {
+            var w = screen.width,
+                h = screen.height
+            desktopCapturer.getSources({ types: ['screen'], thumbnailSize:{width: w, height: h}},
+                (error, sources) => {
+                    if (error) throw error;
+                    localStorage['img_capture_fullscreen'] = sources[0].thumbnail.toDataURL()
+                    ipcRenderer.send('open_capturesubwin')
+                });
+        }
+
+        capture()
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>IT工具条</title>
+    <script type="text/javascript" src="static/js/bootstrap/jquery-2.0.0.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+                
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <style>
+    body{
+      background-color: lightblue;
+    }
+
+.list-group {
+     border-radius: 0px; 
+    -webkit-box-shadow: 0 0 0 rgba(0,0,0,0);
+    box-shadow: 0 0 0 transparent;
+}
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: 1px;
+    background-color:transparent;
+    
+    border-top: 2px solid blue;
+    border-bottom: 0px solid steelblue;
+    border-right: 0px solid steelblue;
+    border-left: 0px solid steelblue;
+    
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+
+    -webkit-box-shadow: 0 8px 0 0 steelblue inset;
+    box-shadow: 0 8px 0 0 steelblue inset;
+}
+
+.list-group-item:first-child {
+     border-top-left-radius: 2px;
+     border-top-right-radius: 2px;
+}
+a.list-group-item:hover{
+  background-color:dodgerblue;
+}
+.list-group-item:last-child {
+     border-bottom-left-radius: 2px;
+     border-bottom-right-radius: 2px;
+}
+div[class*="col-xs-"]{
+  padding-right: 0px;
+  padding-left: 0px;
+}
+#marquee_1{
+  border:2px solid green;
+  border-radius: 2px;
+  padding: 0 0px;
+}
+</style>
+  </head>
+  <body>
+    <div id="main_win" class="container-flux">
+      <div id="main_body" class="col-xs-12">
+            <marquee id="marquee_1" behavior="scroll" scrollamount=2 direction="up" height="34px"
+                  onmouseover="this.stop();" onmouseout="this.start();">
+
+                  <div id="task_list_container" class="list-group">
+                    <a href="#" class="list-group-item">
+                      <h4 class="list-group-item-heading">List group item heading</h4>
+                      <p class="list-group-item-text">...</p>
+                    </a>
+
+
+                    <task-item v-for="task in tasks"  :key="task.title" v-bind:task="task"></task-item>
+                  </div>
+          </marquee>
+      </div>
+    </div>
+  </body>
+  <script>
+Vue.component("task-item",{
+  props:['task'],
+  template:`<a href="#" class="list-group-item">
+                      <h4 class="list-group-item-heading">{{task.title}}</h4>
+                      <p class="list-group-item-text">{{task.desc}}</p>
+                    </a>`
+})
+
+
+let tasks = new Vue({
+  el:"#task_list_container",
+  data:{tasks:[{title:"item1 ...",desc:"desc1 ... ...."},
+  {title:"item2 ...",desc:"desc2 ... ...."},
+  {title:"item3 ...",desc:"desc3 ... ...."},
+  {title:"item4 ...",desc:"desc4 ... ...."},
+  {title:"item5 ...",desc:"desc5 ... ...."}
+  ]}
+})
+
+  const {remote,ipcRenderer} = require('electron')
+  ipcRenderer.on('init-size',(event,args)=>{
+    [w,h] = args
+    console.log(args)
+    $("#marquee_1").attr("width",w+"px")    
+    $("#marquee_1").attr("height",h+"px")    
+  })
+  ipcRenderer.on('resize', (event, h) => {
+    console.log("new height of main body is ",h)
+    $("#marquee_1").attr("height",h+"px")
+  })
+  </script>
+</html>

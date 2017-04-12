@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>IT工具条--管理员主界面</title>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+                
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <style>
+      div[class*="col-xs-"]{
+        padding-right: 1px;
+        padding-left: 1px;
+      }
+    body{
+      background-color: lightblue;
+      padding: 0;
+      margin: 0;
+      height:24px;
+      overflow: hidden;
+    }
+div#title_bar{
+  border:1px solid red;
+}
+
+div.top-bar{
+  height:24px;
+  background-color:steelblue;
+}
+
+.btn-sm{
+  padding: 0px 5px;
+  border-radius: 50px;
+}
+
+.cls_expand_down{
+    position: relative;  
+    float: left;
+    overflow: hidden;
+}
+
+.bar_vertical_line{
+  width:0px;
+  border:0px solid rgba(18, 18, 222, 0.43);
+  position: relative;
+  float: left;
+  height:20px;
+  border-radius: 20px;
+  margin:0 5px;
+  clear: both;
+  cursor:col-resize;
+}
+
+.bar_vertical_line:hover{
+  width:0px;
+  border:0px solid rgba(18, 18, 222, 1);
+  -webkit-transform: translate3d(-1px,0,0);
+  transform: translate3d(-1.5px,0,0);
+  border-radius: 20px;  
+  margin:0 4px;
+}
+
+.user_face_name_department {
+    position:relative;    
+    float: left;
+    height:24px;
+    /*line-height: 24px;*/
+    /*margin-left: 23px;*/
+    text-align: left;
+    /*border:1px solid black;*/
+    cursor:pointer;
+}
+.user_face_name_department .user_name_department {
+    overflow: hidden;
+    margin-left: 23px;
+    margin-top: -45px;
+    /* height: 4.75em; */
+    background: transparent;
+    /*color: #3c4a50;*/
+    -webkit-transition: -webkit-transform 0.35s;
+    transition: transform 0.35s;
+    -webkit-transform: translate3d(0,30px,0);
+    transform: translate3d(0,30px,0);
+    visibility: visible;
+}
+
+.user_face_name_department img {
+    display:inline-block;
+    position: relative;
+    -webkit-transition: -webkit-transform 0.35s;
+    transition: transform 0.35s;
+}
+
+.user_face_name_department:hover img {
+  -webkit-transform: translate3d(0,-1px,0);
+  transform: translate3d(0,-1px,0);
+}
+
+.user_face_name_department h2 {
+    position: relative;
+    float:left;
+    text-transform: uppercase;
+    color: #fff;
+    text-align: left;
+    font-size: 10px;
+    padding: 0px;
+    margin: 0px;
+    display: block;
+    -webkit-transition: -webkit-transform 0.35s;
+    transition: transform 0.35s;
+    visibility: visible;
+    /*line-height:23px;*/
+    height:24px;
+}
+.user_face_name_department:hover h2 {
+	-webkit-transition-delay: 0.05s;
+	transition-delay: 0.05s;
+}
+
+img#face_img{
+  width: 20px;
+  height: 20px;
+  /*line-height: 20px;*/
+  padding: 2px;
+  border-radius: 4px;
+}
+
+div.user_info_card{
+  position: absolute;
+  visibility: hidden;
+  /*height:24px;*/
+  padding:0 0 0 24px;
+}
+div.user_info_card p{
+  display: block;
+}
+
+div.user_info_card p.icon-links a {
+    display: inline-block;  
+    font-size: 12px;
+    width:20px;
+    border:1px solid white;
+    border-radius: 2px;
+    text-decoration: none;
+    padding: 0px 0px;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0 0;
+    background-color: transparent;
+    text-align: center;
+}
+div.user_info_card:hover p.icon-links a:hover,
+div.user_info_card:hover p.icon-links a:focus {
+	color: #252d31;
+  box-shadow: 0 0 5px #fff;
+}
+
+div.user_info_card p.icon-links a span:before {
+	display: inline-block;
+	padding: 0 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+div.title_bar_nav{
+  position: relative;
+  float: left;
+  margin-left: 150px;
+  padding:1px 1px 1px 1px;
+  background-color: rgba(18, 18, 222, 0.3);
+  cursor:col-resize;
+}
+
+.title_bar_nav a{
+  color: white;
+}
+
+#message_noti{
+  position: absolute;
+  top:0px;
+  background: rgb(white, white,white,0.4);
+  color:white;
+  right:249px;
+}
+
+.nav_pre{
+  color: blue;
+}
+.nav_next{
+  color: blue;
+}
+
+#_display_bar{
+  position: relative;
+  float: left;
+  width:500px;
+}
+</style>
+  </head>
+  <body style="-webkit-app-region: drag">
+    <div id="top_bar" class="container-flux">
+      <div id="title_bar" class="col-xs-12 top-bar">
+        <div id="title_bar_left" class="col-xs-10">
+          <div class="user_face_name_department" onmouseover="show_user_info_card();">
+              <a href="#"><img id="face_img" src=""></a>
+              <div class="user_name_department">
+                  <h2 id="user_name_department">姓名-岗位</h2>
+              </div>
+          </div>
+          <div class="title_bar_nav">
+              <a class='nav_pre' href="#"><span class='glyphicon glyphicon-chevron-left'></span></a>
+              <div id="_display_bar">
+                要想描述非TypeScript编写的类库的类型，我们需要声明类库所暴露出的API。我们叫它声明因为它不是“外部程序”的具体实现。 它们通常是在.d.ts文件里定义的。 如果你熟悉C/C++，你可以把它们当做.h文件。 让我们看一些例子。
+              </div>
+              <a class='nav_next' href="#"><span class='glyphicon glyphicon-chevron-right'></span></a>
+          </div>
+          <div class="cls_expand_down">
+            <a class="btn btn-sm" onclick="expand_down();">
+              <span class="glyphicon glyphicon-chevron-down">
+              </span>
+            </a>
+          </div>
+        </div>
+        <div id="title_bar_right" class="btn-group col-xs-2">
+          <input type="button" class="btn btn-primary btn-sm" style="vertical-align: middle;" onclick="open_setting_process();" value="流程设置">    
+          <input type="button" class="btn btn-primary btn-sm" style="vertical-align: middle;" onclick="open_baoxiuwin();" value="报修">
+          <input type="button" class="btn btn-primary btn-sm" style="vertical-align: middle;" onclick="quit_app();" value="关闭">
+        </div>
+      </div>
+    </div>
+       
+
+
+<div id="user_info_card" class="user_info_card" onmouseout="hide_user_info_card();">
+    <p class="icon-links">
+      <a class="info" href="#">
+          <span class="glyphicon glyphicon-user"></span>
+      </a>
+      <a href="#">
+          <span class="glyphicon glyphicon-envelope"></span>
+      </a>
+      <a href="#">
+          <span class="glyphicon glyphicon-pencil"></span>
+      </a>
+  </p>
+</div>
+<div id='message_noti'>
+</div>
+  </body>
+  <script>
+  window.$ = window.jQuery = require('jquery');
+  const {remote,ipcRenderer} = require('electron')
+  // ipcRenderer.on('resize', (event, h) => {
+  //   console.log("new height of main body is ",h)
+  //   $("#marquee_1").attr("height",(h-40)+"px")
+  //   // $("#title_bar").css("height",h+"px")
+  //   // $("#title_bar").css("line-height",h+"px")
+  // })
+
+  ipcRenderer.on('init',(event,user)=>{
+    //显示当前登陆电脑绑定的用户信息
+    console.log(user)
+    $("#face_img").attr("src",user["face_url"])
+    $("#user_name_department").html(user.UserName)
+
+    $.ajax({
+      url:'http://it.canature.com:8989/v1/list/requestlist',
+      success:(ret)=>{
+        if(ret && ret.ReturnCode && ret.ReturnCodeMap && ret.ReturnCodeMap[ret.ReturnCode] == 'ok'){
+          
+        }
+      }
+    })
+  })
+
+  ipcRenderer.on('message_arrived',(event,msg)=>{
+    $("#message_noti").html(msg)    
+    $('#message_noti').show()
+    setTimeout(()=>{
+       $('#message_noti').fadeOut("slow")
+      $("#message_noti").html("")
+    }, 10000);
+  })
+
+function open_baoxiuwin(){
+  console.log("want to open baoxiuwin")
+  ipcRenderer.send('open_baoxiuwin','opening sub window')
+}
+
+function open_setting_process(){
+  console.log("want to open setting process window")
+  ipcRenderer.send('open_setting_process','opening sub window')
+}
+
+function expand_down(){
+  ipcRenderer.send("expand","展开队列列表")
+}
+function show_user_info_card(){
+  $(".user_info_card").css("visibility","visible")
+  $(".user_name_department").css("-webkit-transform","translate3d(70px,30px,0)")
+	$(".user_name_department").css("transform","translate3d(70px,30px,0)")
+}
+
+function hide_user_info_card(){
+  $(".user_info_card").css("visibility","hidden")
+  $(".user_name_department").css("-webkit-transform","translate3d(0,30px,0)")
+	$(".user_name_department").css("transform","translate3d(0,30px,0)")
+}
+
+function quit_app(){
+  ipcRenderer.send("quit","用户退出ITBar")
+}
+  </script>
+</html>

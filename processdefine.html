@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>IT报修单填写</title>
+    <script type="text/javascript" src="static/js/bootstrap/jquery-2.0.0.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+                
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+    <style>
+        body {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+            <div class="form-group">
+                <label class="col-xs-2 control-label">名称</label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" id="processDef.name" placeholder="添加流程名">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 control-label">描述</label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" id="processDef.description" placeholder="添加流程描述">
+                </div>
+            </div>
+            
+            <form id="form_1" class="form-horizontal">
+
+
+                <legend>节点定义
+                <input type="button" onclick="add_node_field();" value="添加">   
+                </legend>
+
+
+                <div id="node_def_return_info" class="col-xs-12 has-success"></div>
+                <div id="node_add_div" class="col-xs-12">
+
+                </div>
+
+                <div class="col-xs-10 col-xs-offset-2">
+                    <input type="button" class="btn btn-primary" onclick="saveNodeDef();" value="保存">
+                </div>
+
+            </form>
+
+            <div class="col-xs-12">
+                <form id="form_2" class="form-horizontal">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-xs-2 control-label">选择流程</label>
+                            <div class="col-xs-6">
+                                <select id="select_process_key">
+                                </select>
+                            </div>
+                        </div>
+                        <legend>流向定义
+                        <input type="button" onclick="add_transition_field();" value="添加">   
+                        </legend>
+                        <div id="transition_def_return_info" class="col-xs-12 has-success"></div>
+                        
+                        <div id="transition_add_div" class="col-xs-12">
+                            
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-xs-10 col-xs-offset-2">
+                                <input type="button" class="btn btn-primary" onclick="saveTransitionDef();" value="保存">
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+    </div>
+</body>
+<script>
+$(document).ready(()=>{
+    $("#select_process_key").on("change",(event)=>{
+        fill_select_nodes($(event.currentTarget).val())
+    })
+    $.ajax({
+        url:"http://it.canature.com:8989/v1/list/distinctprocesskey",
+        type:"post",
+        success:(returnObject)=>{
+            if(returnObject.ReturnResult == undefined) return false
+            if(returnObject.ReturnResult == null) return false
+
+            if(returnObject.ReturnResult.length > 0){
+                $.each(returnObject.ReturnResult,(i,v)=>{
+                    $("#select_process_key").append('<option value="'+v+'">'+v+'</option>')
+                })
+            }
+        }
+    })
+})
+
+
+function fill_select_nodes(processKey){
+    $("#form_2 select[name='from']").empty()
+    $("#form_2 select[name='to']").empty()
+    $.ajax({
+        url:"http://it.canature.com:8989/v1/list/nodes",
+        type:"post",
+        data:{"process_key":processKey},
+        success:(nodes)=>{
+            console.log(nodes)
+            if(nodes.ReturnResult == null || nodes.ReturnResult==undefined) return false
+            $.each(nodes.ReturnResult,function(i,v){
+                $("#form_2 select[name='from']").append('<option value="'+v.id+'">'+v.Name+'</option>')
+                $("#form_2 select[name='to']").append('<option value="'+v.id+'">'+v.Name+'</option>')
+            })
+        }
+    })
+}
+
+
+function add_node_field(){
+    $("#node_add_div").append(
+        `<legend>节点信息</legend>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">节点名称</label>
+            <div class="col-xs-10">
+                <input type="text" class="form-control" name="nodedefs.name" placeholder="节点名称">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">处理人</label>
+            <div class="col-xs-10">
+                <select onchange='add_handleuser_select_field(this);'>
+                    <option value='1'>报修人</option>
+                    <option value='2'>填Email</option>
+                </select>
+            </div>
+            <div class="col-xs-4">
+                
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">节点描述</label>
+            <div class="col-xs-10">
+                <textarea class="form-control" rows="3" name="nodedefs.description"></textarea>
+                <span class="help-block">详细的节点描述信息，可以描述该节点的作用</span>
+            </div>
+        </div>`)
+}
+
+
+function add_handleuser_select_field(obj){
+    console.log($(obj).val())
+    if($(obj).val()==1){
+        $(obj).next().remove()
+    }else if($(obj).val()==2){
+        $(obj).after('<input type="text" class="form-control" name="nodedefs.handleUserEmail" placeholder="节点处理人的公司邮箱">')
+    }
+}
+function saveNodeDef(){
+    let formdata = $("#form_1").serializeArray()
+   
+    let processKey = $("#processDef\\.name").val()
+    formdata.push({"name":"nodedefs.process_key","value":processKey})
+    console.log("formdata",formdata)
+    $.ajax({
+        url:"http://it.canature.com:8989/v1/def/node",
+        type:"post",
+        data:formdata,
+        dataType:"json",
+        success:(obj)=>{
+            $("#node_def_return_info").html(obj.ReturnCodeMap[obj.ReturnCode])
+            if(obj.ReturnCodeMap[obj.ReturnCode]=="ok"){
+                
+            }
+        }
+    })
+}
+
+
+
+function saveTransitionDef(){
+    let formdata=$("#form_2").serializeArray()
+    let processkey = $("#select_process_key").val()
+    let processDescription = $("#processDef\\.description").val()
+    formdata.push({"name":"processDef.name","value":processkey})
+    formdata.push({"name":"processDef.description","value":processDescription})
+    console.log("formdata",formdata)
+    $.ajax({
+        url:'http://it.canature.com:8989/v1/def/process',
+        data:formdata,
+        type:'post',
+        success:(returnObject)=>{
+
+        }
+    })
+}
+
+function add_transition_field(){
+    $("#transition_add_div").append(`
+        <div class="form-group">
+            <fieldset>
+                <legend>流向信息</legend>
+                <label class="col-xs-1 control-label">从</label>
+                <div class="col-xs-2">
+                    <select name="from">
+                    </select>
+                </div>
+                <label class="col-xs-2 control-label">流转到</label>                
+                <div class="col-xs-2">
+                    <select name="to">
+                    </select>
+                </div>
+                
+                <label class="col-xs-2 control-label">流转条件:</label>
+                <div class="col-xs-3">
+                    <input type="text" name="conditionExpr">
+                </div>
+            </fieldset>
+        </div>
+    `)
+    let processkey=$("#select_process_key").val()
+    fill_select_nodes(processkey)
+}
+</script>
+
+</html>

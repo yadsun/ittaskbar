@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>IT报修单填写</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+            crossorigin="anonymous">
+
+            <!-- Latest compiled and minified JavaScript -->          
+                <script src="https://unpkg.com/vue/dist/vue.js"></script>
+                <style>
+                    body {
+                        background-color: lightblue;
+                    }
+                    
+                    .mdl-badge[data-badge]:after {
+                        font-weight: 600;
+                        font-size: 6px;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        background: rgb(255, 64, 129);
+                        color: #4caf50;
+                    }
+                    
+                    .orange-16 {
+                        color: lightgreen;
+                        font-size: 16px;
+                    }
+                    
+                    .orange-24 {
+                        color: lightgreen;
+                        font-size: 24px;
+                    }
+                    
+                    .orange-36 {
+                        color: lightgreen;
+                        font-size: 36px;
+                    }
+                </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="col-xs-12">
+            <form id="baoxiu_form" class="form-horizontal">
+                <input type='hidden' id="id" name="id" value=''>
+                <input type='hidden' name='processDefineId' value='58bfaec5ce73102fa38e84c1'>
+                <input type='hidden' name='processInstanceId' value=''>
+                <input type='hidden' name='reporterId' value=''>
+                <fieldset>
+                    <legend>填写报修单</legend>
+                    <div class="form-group">
+                        <label for="catalog" class="col-xs-2 control-label">故障类型</label>
+                        <div class="col-xs-10">
+                            <select id="catalog" name="catalog">
+                                <option value="">-</option>
+                                <option value="电脑问题">电脑问题</option>
+                                <option value="网络问题">网络问题</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment" class="col-xs-2 control-label">描述</label>
+                        <div class="col-xs-10">
+                            <textarea type="text" class="form-control" id="comment" name="comment" placeholder="请简要描述故障现象"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment" class="col-xs-2 control-label">截图</label>
+                        <div class="col-xs-10">
+                            <img src="" alt="" id="my-image">
+                            <button type="button" class="btn btn-primary" onclick="takeScreenshot();"><span class='glyphicon glyphicon-picture'></span></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12 text-center">
+                            <input type='button' id="save_btn" class="btn btn-primary btn-lg" value='保存' onclick='submitForm();'>
+                            <input type='button' id="forward_btn" class="btn btn-primary btn-lg" value='提交' onclick='submitStart();'>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</body>
+
+<script>
+    window.$ = window.jQuery = require('jquery');
+    const { remote,ipcRenderer } = require('electron')
+
+    ipcRenderer.on('capture_finish',(event,img)=>{
+        $("#my-image").attr('src',localStorage['img_capture'])
+    })
+    let user
+    $(document).ready(()=>{
+        $("#forward_btn").hide()
+        user = remote.getGlobal('user')
+        $('input[name=reporterId]').val(user.id)
+    })
+
+    function save_success(returnResult){
+        if(returnResult){
+            $("#id").val(returnResult.ID)
+        }
+        $("#save_btn").hide()
+        $("#forward_btn").show()
+    }
+
+    function save_fail(){
+        $("#save_btn").show()
+        $("#forward_btn").hide()
+    }
+    function submitForm(){
+        let formdata = $("#baoxiu_form").serializeArray()
+        $.ajax({
+            url:'http://it.canature.com:8989/v1/baoxiu/save',
+            data:formdata,
+            success:(ret)=>{
+                console.log(ret)
+                console.log(ret.ReturnCode)
+                console.log(ret.ReturnCodeMap[ret.ReturnCode])
+                if(ret.ReturnCodeMap[ret.ReturnCode]=="ok"){
+                    console.log(ret.ReturnResult)
+                    save_success(ret.ReturnResult)
+                }else{
+                    save_fail()
+                }
+            }
+        })
+    }
+
+    function takeScreenshot(){
+        ipcRenderer.send('capture','')
+    }
+    function submitStart(){
+        let formdata = $("#baoxiu_form").serializeArray() 
+        $.ajax({
+            url:'http://it.canature.com:8989/v1/baoxiu/start',
+            data:formdata,
+            success:(ret)=>{
+                
+            }
+        })
+    }
+</script>
+
+</html>
