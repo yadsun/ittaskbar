@@ -1,11 +1,12 @@
 {
   "name": "itbar",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "This is a toolbar for it admins",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
+    "dev": "electron . --dev",
     "package": "electron-packager ./  --platform=win32 --out ./app --version 0.0.2 --overwrite --icon=./img/itbar.ico"
   },
   "repository": {
@@ -38,7 +39,7 @@
   },
   "release": "build",
   "build": {
-    "appId": "com.github.iffy.electronupdaterexample",
+    "appId": "com.github.yadsun.ittaskbar",
     "nsis": {
       "perMachine": true
     },

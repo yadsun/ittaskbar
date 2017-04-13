@@ -5,6 +5,18 @@ const macaddress = require('macaddress')
 const path = require('path')
 const url = require('url')
 
+let isDev = false
+
+// Parse command line options.
+const argv = process.argv.slice(1)
+for (let i = 0; i < argv.length; i++) {
+    console.log(argv[i])
+    if (argv[i] === '--dev') {
+        isDev = true
+        break
+    }
+}
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -33,7 +45,9 @@ function createTopLoginWindow() {
 
 
     // 打开开发调试工具
-    loginWindow.webContents.openDevTools()
+    if (isDev) {
+        loginWindow.webContents.openDevTools()
+    }
 
     // Emitted when the window is closed.
     loginWindow.on('closed', () => {
@@ -52,7 +66,9 @@ function createListeningWindow() {
             protocol: 'file:',
             slashes: true
         }))
-        listeningWin.openDevTools()
+        if (isDev) {
+            listeningWin.openDevTools()
+        }
 
         listeningWin.setSize(400, 400, false)
         listeningWin.on('closed', () => {
@@ -89,7 +105,9 @@ function createOrShowListWin() {
             listWin.webContents.send('init-size', [w, 400])
         })
 
-        listWin.openDevTools()
+        if (isDev) {
+            listWin.openDevTools()
+        }
 
         listWin.on('resize', () => {
             let [w, h] = listWin.getContentSize()
@@ -141,8 +159,9 @@ function createCaptureWin() {
         protocol: 'file:',
         slashes: true
     }))
-
-    captureWin.webContents.openDevTools()
+    if (isDev) {
+        captureWin.webContents.openDevTools()
+    }
 
     captureWin.on('closed', () => {
         captureWin = null
@@ -161,8 +180,9 @@ function createCaptureSubWin() {
         protocol: 'file:',
         slashes: true
     }))
-
-    captureSubWin.webContents.openDevTools()
+    if (isDev) {
+        captureSubWin.webContents.openDevTools()
+    }
 
     captureSubWin.on('closed', () => {
         captureSubWin = null
@@ -184,7 +204,9 @@ ipcMain.on("message_arrived", (event, msg) => {
 ipcMain.on('open_baoxiuwin', (event, arg) => {
     if (subWin === undefined || subWin === null) {
         let baoxiuwin = new BrowserWindow({ alwaysOnTop: true, openDevTools: true, modal: true })
-        baoxiuwin.webContents.openDevTools()
+        if (isDev) {
+            baoxiuwin.webContents.openDevTools()
+        }
         let winRectangle = mainWindow.getBounds()
         baoxiuwin.setPosition(winRectangle.x, winRectangle.y + winRectangle.height)
 
@@ -207,7 +229,9 @@ ipcMain.on('open_baoxiuwin', (event, arg) => {
 ipcMain.on('open_setting_process', (event, arg) => {
     if (subWin === undefined || subWin === null) {
         let processSettingWin = new BrowserWindow({ alwaysOnTop: true })
-        processSettingWin.webContents.openDevTools()
+        if (isDev) {
+            processSettingWin.webContents.openDevTools()
+        }
         let winRectangle = mainWindow.getBounds()
         processSettingWin.setPosition(winRectangle.x, winRectangle.y + winRectangle.height)
 
@@ -233,8 +257,9 @@ function loginSuccess(user) {
     })
 
     mainWindow.setPosition(0, 0, true)
-
-    mainWindow.openDevTools()
+    if (isDev) {
+        mainWindow.openDevTools()
+    }
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
